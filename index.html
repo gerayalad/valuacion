@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valuación de Puestos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        header h1 {
+            color: #1a56db;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .form-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #444;
+            font-size: 0.9rem;
+        }
+
+        .form-group .weight-badge {
+            font-weight: 400;
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: #333;
+            background: #fafafa;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1a56db;
+            background: #fff;
+        }
+
+        .btn-calculate {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #1a56db;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-calculate:hover {
+            background-color: #1444b0;
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.visible {
+            display: block;
+        }
+
+        .results-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+
+        .results-card h2 {
+            color: #1a56db;
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .results-card .puesto-name {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        thead th {
+            background-color: #f0f4ff;
+            color: #1a56db;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tfoot td {
+            padding: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            border-top: 2px solid #1a56db;
+        }
+
+        .classification {
+            text-align: center;
+            padding: 16px;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        .classification .label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .classification .band {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .band-operativo {
+            background-color: #ecfdf5;
+            color: #059669;
+        }
+
+        .band-profesional {
+            background-color: #eff6ff;
+            color: #1a56db;
+        }
+
+        .band-gerencial {
+            background-color: #fff7ed;
+            color: #d97706;
+        }
+
+        .band-directivo {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 12px;
+            }
+
+            header h1 {
+                font-size: 1.4rem;
+            }
+
+            .form-card, .results-card {
+                padding: 16px;
+            }
+
+            thead th, tbody td, tfoot td {
+                padding: 8px 6px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Valuación de Puestos</h1>
+            <p>Método de puntos por factor — Evalúe el puesto en cada factor compensable</p>
+        </header>
+
+        <div class="form-card">
+            <form id="valuationForm">
+                <div class="form-group">
+                    <label for="puestoName">Nombre del Puesto</label>
+                    <input type="text" id="puestoName" placeholder="Ej: Gerente de Operaciones" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Responsabilidad <span class="weight-badge">(20%)</span></label>
+                    <select id="factor-0" required>
+                        <option value="" disabled selected>Seleccione un nivel</option>
+                        <option value="1">1 - Bajo</option>
+                        <option value="2">2 - Medio</option>
+                        <option value="3">3 - Alto</option>
+                        <option value="4">4 - Muy Alto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Complejidad del trabajo <span class="weight-badge">(15%)</span></label>
+                    <select id="factor-1" required>
+                        <option value="" disabled selected>Seleccione un nivel</option>
+                        <option value="1">1 - Bajo</option>
+                        <option value="2">2 - Medio</option>
+                        <option value="3">3 - Alto</option>
+                        <option value="4">4 - Muy Alto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Conocimientos y habilidades requeridos <span class="weight-badge">(15%)</span></label>
+                    <select id="factor-2" required>
+                        <option value="" disabled selected>Seleccione un nivel</option>
+                        <option value="1">1 - Bajo</option>
+                        <option value="2">2 - Medio</option>
+                        <option value="3">3 - Alto</option>
+                        <option value="4">4 - Muy Alto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Supervisión ejercida/recibida <span class="weight-badge">(10%)</span></label>
+                    <select id="factor-3" required>
+                        <option value="" disabled selected>Seleccione un nivel</option>
+                        <option value="1">1 - Bajo</option>
+                        <option value="2">2 - Medio</option>
+                        <option value="3">3 - Alto</option>
+                        <option value="4">4 - Muy Alto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Condiciones de trabajo <span class="weight-badge">(5%)</span></label>
+                    <select id="factor-4" required>
+                        <option value="" disabled selected>Seleccione un nivel</option>
+                        <option value="1">1 - Bajo</option>
+                        <option value="2">2 - Medio</option>
+                        <option value="3">3 - Alto</option>
+                        <option value="4">4 - Muy Alto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Toma de decisiones <span class="weight-badge">(15%)</span></label>
+                    <select id="factor-5" required>
+                        <option value="" disabled selected>Seleccione un nivel</option>
+                        <option value="1">1 - Bajo</option>
+                        <option value="2">2 - Medio</option>
+                        <option value="3">3 - Alto</option>
+                        <option value="4">4 - Muy Alto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Impacto en resultados <span class="weight-badge">(15%)</span></label>
+                    <select id="factor-6" required>
+                        <option value="" disabled selected>Seleccione un nivel</option>
+                        <option value="1">1 - Bajo</option>
+                        <option value="2">2 - Medio</option>
+                        <option value="3">3 - Alto</option>
+                        <option value="4">4 - Muy Alto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Relaciones internas/externas <span class="weight-badge">(5%)</span></label>
+                    <select id="factor-7" required>
+                        <option value="" disabled selected>Seleccione un nivel</option>
+                        <option value="1">1 - Bajo</option>
+                        <option value="2">2 - Medio</option>
+                        <option value="3">3 - Alto</option>
+                        <option value="4">4 - Muy Alto</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-calculate">Calcular Valuación</button>
+            </form>
+        </div>
+
+        <div class="results" id="results">
+            <div class="results-card">
+                <h2>Resultados</h2>
+                <p class="puesto-name" id="resultPuesto"></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Factor</th>
+                            <th>Peso</th>
+                            <th>Nivel</th>
+                            <th>Puntos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3">Puntaje Total</td>
+                            <td id="totalScore"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="classification" id="classification">
+                    <div class="label">Clasificación</div>
+                    <div class="band" id="bandLabel"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const factors = [
+            { name: 'Responsabilidad', weight: 0.20 },
+            { name: 'Complejidad del trabajo', weight: 0.15 },
+            { name: 'Conocimientos y habilidades requeridos', weight: 0.15 },
+            { name: 'Supervisión ejercida/recibida', weight: 0.10 },
+            { name: 'Condiciones de trabajo', weight: 0.05 },
+            { name: 'Toma de decisiones', weight: 0.15 },
+            { name: 'Impacto en resultados', weight: 0.15 },
+            { name: 'Relaciones internas/externas', weight: 0.05 }
+        ];
+
+        const levelLabels = { 1: 'Bajo', 2: 'Medio', 3: 'Alto', 4: 'Muy Alto' };
+
+        function getBand(score) {
+            if (score <= 1.75) return { name: 'Operativo', class: 'band-operativo' };
+            if (score <= 2.50) return { name: 'Profesional', class: 'band-profesional' };
+            if (score <= 3.25) return { name: 'Gerencial', class: 'band-gerencial' };
+            return { name: 'Directivo', class: 'band-directivo' };
+        }
+
+        document.getElementById('valuationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var puestoName = document.getElementById('puestoName').value.trim();
+            var tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+            var total = 0;
+
+            for (var i = 0; i < factors.length; i++) {
+                var level = parseInt(document.getElementById('factor-' + i).value);
+                var points = level * factors[i].weight;
+                total += points;
+
+                var row = document.createElement('tr');
+                row.innerHTML =
+                    '<td>' + factors[i].name + '</td>' +
+                    '<td>' + (factors[i].weight * 100) + '%</td>' +
+                    '<td>' + level + ' - ' + levelLabels[level] + '</td>' +
+                    '<td>' + points.toFixed(2) + '</td>';
+                tbody.appendChild(row);
+            }
+
+            document.getElementById('resultPuesto').textContent = puestoName;
+            document.getElementById('totalScore').textContent = total.toFixed(2);
+
+            var band = getBand(total);
+            var classificationEl = document.getElementById('classification');
+            classificationEl.className = 'classification ' + band.class;
+            document.getElementById('bandLabel').textContent = band.name;
+
+            document.getElementById('results').classList.add('visible');
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
