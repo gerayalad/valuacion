@@ -238,7 +238,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Responsabilidad <span class="weight-badge">(20%)</span></label>
+                    <label for="factor-0">Responsabilidad <span class="weight-badge">(20%)</span></label>
                     <select id="factor-0" required>
                         <option value="" disabled selected>Seleccione un nivel</option>
                         <option value="1">1 - Bajo</option>
@@ -249,7 +249,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Complejidad del trabajo <span class="weight-badge">(15%)</span></label>
+                    <label for="factor-1">Complejidad del trabajo <span class="weight-badge">(15%)</span></label>
                     <select id="factor-1" required>
                         <option value="" disabled selected>Seleccione un nivel</option>
                         <option value="1">1 - Bajo</option>
@@ -260,7 +260,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Conocimientos y habilidades requeridos <span class="weight-badge">(15%)</span></label>
+                    <label for="factor-2">Conocimientos y habilidades requeridos <span class="weight-badge">(15%)</span></label>
                     <select id="factor-2" required>
                         <option value="" disabled selected>Seleccione un nivel</option>
                         <option value="1">1 - Bajo</option>
@@ -271,7 +271,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Supervisión ejercida/recibida <span class="weight-badge">(10%)</span></label>
+                    <label for="factor-3">Supervisión ejercida/recibida <span class="weight-badge">(10%)</span></label>
                     <select id="factor-3" required>
                         <option value="" disabled selected>Seleccione un nivel</option>
                         <option value="1">1 - Bajo</option>
@@ -282,7 +282,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Condiciones de trabajo <span class="weight-badge">(5%)</span></label>
+                    <label for="factor-4">Condiciones de trabajo <span class="weight-badge">(5%)</span></label>
                     <select id="factor-4" required>
                         <option value="" disabled selected>Seleccione un nivel</option>
                         <option value="1">1 - Bajo</option>
@@ -293,7 +293,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Toma de decisiones <span class="weight-badge">(15%)</span></label>
+                    <label for="factor-5">Toma de decisiones <span class="weight-badge">(15%)</span></label>
                     <select id="factor-5" required>
                         <option value="" disabled selected>Seleccione un nivel</option>
                         <option value="1">1 - Bajo</option>
@@ -304,7 +304,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Impacto en resultados <span class="weight-badge">(15%)</span></label>
+                    <label for="factor-6">Impacto en resultados <span class="weight-badge">(15%)</span></label>
                     <select id="factor-6" required>
                         <option value="" disabled selected>Seleccione un nivel</option>
                         <option value="1">1 - Bajo</option>
@@ -315,7 +315,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Relaciones internas/externas <span class="weight-badge">(5%)</span></label>
+                    <label for="factor-7">Relaciones internas/externas <span class="weight-badge">(5%)</span></label>
                     <select id="factor-7" required>
                         <option value="" disabled selected>Seleccione un nivel</option>
                         <option value="1">1 - Bajo</option>
@@ -329,7 +329,7 @@
             </form>
         </div>
 
-        <div class="results" id="results">
+        <div class="results" id="results" aria-live="polite">
             <div class="results-card">
                 <h2>Resultados</h2>
                 <p class="puesto-name" id="resultPuesto"></p>
@@ -388,7 +388,7 @@
             var total = 0;
 
             for (var i = 0; i < factors.length; i++) {
-                var level = parseInt(document.getElementById('factor-' + i).value);
+                var level = parseInt(document.getElementById('factor-' + i).value, 10);
                 var points = level * factors[i].weight;
                 total += points;
 
